@@ -1,0 +1,7 @@
+<Solution>
+  <Configurations>
+    <Platform Name="x64" />
+    <Platform Name="x86" />
+  </Configurations>
+  <Project Path="wereKindaBack/wereKindaBack.vcxproj" Id="80baa919-9f06-40d8-a8c8-a634c2fe9275" />
+</Solution>
