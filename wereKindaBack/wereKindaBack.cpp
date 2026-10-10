@@ -8,7 +8,7 @@ const unsigned int screen_width = 1000;
 const unsigned int screen_height = 800;
 
 const float gravity = 3600.f;
-const float bounciness = 0.95f;
+const float bounciness = 0.9f;
 const float friction = 0.99f;
 
 struct Ball {								//ball struct. Just the structure and what defines a ball here
@@ -146,8 +146,9 @@ int main() {
 	sf::Clock clock;
 
 	std::vector<Wall> walls;
-	walls.emplace_back(sf::Vector2f{ 100.f, 550.f }, sf::Vector2f{ 275.f, 500.f });
-	walls.emplace_back(sf::Vector2f{ 275.f, 500.f }, sf::Vector2f{ 400.f, 550.f });
+	walls.emplace_back(sf::Vector2f{ 100.f, 650.f }, sf::Vector2f{ 275.f, 600.f });
+	walls.emplace_back(sf::Vector2f{ 275.f, 600.f }, sf::Vector2f{ 400.f, 650.f });
+	walls.emplace_back(sf::Vector2f{ 400.f, 650.f }, sf::Vector2f{ 475.f, 600.f });
 
 	while (window.isOpen()) {
 		float dt = clock.restart().asSeconds();
