@@ -141,6 +141,15 @@
   <ItemGroup>
     <ClCompile Include="wereKindaBack.cpp" />
   </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="resourceFile.rc" />
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="icon.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="resource.h" />
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>

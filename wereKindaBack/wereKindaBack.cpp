@@ -3,6 +3,9 @@
 #include <vector>
 #include <deque>
 #include <algorithm>
+#define NOMINMAX
+#include <windows.h>
+#include "resource.h"
 
 const unsigned int screen_width = 1000;
 const unsigned int screen_height = 800;
@@ -134,6 +137,9 @@ void step(std::vector<Wall>& walls, std::vector<Ball>& balls, float dt) {					//
 
 int main() {
 	sf::RenderWindow window(sf::VideoMode({ screen_width, screen_height }), "Physics Simulation", sf::Style::Titlebar | sf::Style::Close);
+	HICON icon = LoadIcon(GetModuleHandle(nullptr), MAKEINTRESOURCE(IDI_ICON1));
+	SendMessage(window.getNativeHandle(), WM_SETICON, ICON_BIG, (LPARAM)icon);
+	SendMessage(window.getNativeHandle(), WM_SETICON, ICON_SMALL, (LPARAM)icon);
 	window.setFramerateLimit(60);
 
 	std::vector<Ball> balls;
