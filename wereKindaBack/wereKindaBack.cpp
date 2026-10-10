@@ -174,7 +174,7 @@ int main() {
 				if (click->button == sf::Mouse::Button::Left) {
 					sf::Vector2i mp = sf::Mouse::getPosition(window);
 					float r = 30.f;
-					balls.emplace_back(sf::Vector2f{ mp.x - r, mp.y - r }, mouse_velocity, r, sf::Color::Green);
+					balls.emplace_back(sf::Vector2f{ mp.x - r, mp.y - r }, mouse_velocity, r, sf::Color::Red);
 				}
 			}
 		}
