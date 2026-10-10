@@ -14,10 +14,12 @@ const float friction = 0.99f;
 struct Ball {								//ball struct. Just the structure and what defines a ball here
 	sf::Vector2f position;
 	sf::Vector2f velocity;
+	float mass;
 	float radius;
+	float movement_angle = std::acos(velocity.x);
 	sf::CircleShape shape;
-	Ball(sf::Vector2f pos, sf::Vector2f vel, float r, sf::Color color)
-		: position(pos), velocity(vel), radius(r), shape(r)
+	Ball(sf::Vector2f pos, sf::Vector2f vel, float r, float m, sf::Color color)
+		: position(pos), velocity(vel), radius(r), mass(m), shape(r)
 	{
 		shape.setFillColor(color);
 	}
@@ -76,22 +78,31 @@ void step(std::vector<Wall>& walls, std::vector<Ball>& balls, float dt) {					//
 
 			sf::Vector2f center_a = a.position + sf::Vector2f(a.radius, a.radius);
 			sf::Vector2f center_b = b.position + sf::Vector2f(b.radius, b.radius);
+			sf::Vector2f speed_a_temp = a.velocity;
+			sf::Vector2f speed_b_temp = b.velocity;
 
-			sf::Vector2f diff = center_b - center_a;
-			float dist = std::sqrt(diff.x * diff.x + diff.y * diff.y);
+			sf::Vector2f diff = center_b - center_a;					//position difference
+			float dist = std::sqrt(diff.x * diff.x + diff.y * diff.y);	//distance
 			float min_dist = a.radius + b.radius;
 
 			if (dist < min_dist && dist > 0.f) {
-				sf::Vector2f normal = diff / dist;
+				sf::Vector2f normal = diff / dist;						//normal vector going from a to b
 				float overlap = min_dist - dist;
 				a.position -= normal * (overlap / 2.f);
 				b.position += normal * (overlap / 2.f);
 
 				sf::Vector2f rel = a.velocity - b.velocity;
 				float along = rel.x * normal.x + rel.y * normal.y;
+				float j = 2 / (a.mass + b.mass);
+				float k = (a.velocity.x - b.velocity.x) * (center_a.x - center_b.x) + (a.velocity.y - b.velocity.y) * (center_a.y - center_b.y);
+				sf::Vector2f newNormal = (center_a - center_b) / dist;
+
 				if (along > 0.f) {
-					a.velocity -= normal * along;
-					b.velocity += normal * along;
+					speed_a_temp = a.velocity - j * b.mass * (k / dist) * newNormal;
+					speed_b_temp = b.velocity + j * a.mass * (k / dist) * newNormal;
+					
+					a.velocity = speed_a_temp;
+					b.velocity = speed_b_temp;
 					a.velocity *= bounciness;
 					b.velocity *= bounciness;
 				}
@@ -132,7 +143,7 @@ int main() {
 	window.setFramerateLimit(60);
 
 	std::vector<Ball> balls;
-	balls.emplace_back(sf::Vector2f{ 25.f, 100.f }, sf::Vector2f{ 300.f, 0.f }, 30.f, sf::Color::Red);
+	balls.emplace_back(sf::Vector2f{ 25.f, 100.f }, sf::Vector2f{ 300.f, 0.f }, 50.f, 100.f, sf::Color::Red);
 
 	const std::size_t max_history = 4;
 	std::deque<sf::Vector2i> mouse_history;
@@ -174,7 +185,8 @@ int main() {
 				if (click->button == sf::Mouse::Button::Left) {
 					sf::Vector2i mp = sf::Mouse::getPosition(window);
 					float r = 30.f;
-					balls.emplace_back(sf::Vector2f{ mp.x - r, mp.y - r }, mouse_velocity, r, sf::Color::Red);
+					float m = 30.f;
+					balls.emplace_back(sf::Vector2f{ mp.x - r, mp.y - r }, mouse_velocity, r, m, sf::Color::Green);
 				}
 			}
 		}
@@ -199,4 +211,6 @@ int main() {
 
 		window.display();					//updating the screen
 	}
+
+	return 0;
 }
