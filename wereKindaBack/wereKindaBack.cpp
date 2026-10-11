@@ -12,7 +12,7 @@ const unsigned int screen_height = 800;
 
 const float gravity = 3600.f;
 const float bounciness = 0.9f;
-const float friction = 0.99f;
+const float friction_per_second = 0.62f;
 
 struct Ball {								//ball struct. Just the structure and what defines a ball here
 	sf::Vector2f position;
@@ -47,6 +47,7 @@ struct Wall {
 
 void step(std::vector<Wall>& walls, std::vector<Ball>& balls, float dt) {					// substeps which happen in between frames. Defines ball movement and collisions
 
+	const float friction = std::pow(friction_per_second, dt);
 	for (auto& ball : balls) {									// Part of the code calculating the bouncing off of the screen edges
 		ball.velocity.y += gravity * dt;
 		ball.position += ball.velocity * dt;
@@ -86,22 +87,19 @@ void step(std::vector<Wall>& walls, std::vector<Ball>& balls, float dt) {					//
 			float min_dist = a.radius + b.radius;
 
 			if (dist < min_dist && dist > 0.f) {
-				sf::Vector2f normal = diff / dist;						//normal vector going from a to b
+				sf::Vector2f normal = diff / dist;      // from a to b
 				float overlap = min_dist - dist;
 				a.position -= normal * (overlap / 2.f);
 				b.position += normal * (overlap / 2.f);
 
 				sf::Vector2f rel = a.velocity - b.velocity;
-				float along = rel.x * normal.x + rel.y * normal.y;
-				float jj = 2 / (a.mass + b.mass);
-				float k = (a.velocity.x - b.velocity.x) * (center_a.x - center_b.x) + (a.velocity.y - b.velocity.y) * (center_a.y - center_b.y);
-				sf::Vector2f newNormal = (center_a - center_b) / dist;
+				float along = rel.x * normal.x + rel.y * normal.y;   // > 0 means approaching
 
 				if (along > 0.f) {
-					a.velocity -= jj * b.mass * (k / dist) * newNormal;
-					b.velocity += jj * a.mass * (k / dist) * newNormal;
-					a.velocity *= bounciness;
-					b.velocity *= bounciness;
+					float e = (along < 50.f) ? 0.f : bounciness;     // no bounce for slow resting contact
+					float impulse = (1.f + e) * along / (1.f / a.mass + 1.f / b.mass);
+					a.velocity -= normal * (impulse / a.mass);
+					b.velocity += normal * (impulse / b.mass);
 				}
 			}
 		}
